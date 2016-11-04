@@ -1,0 +1,59 @@
+---------------------------------------------------------------------------
+Proyecto 2
+---------------------------------------------------------------------------
+
+Implementación y evaluación de algoritmos de juegos para una versión 
+reducida del juego de othello.
+
+---------------------------------------------------------------------------
+Material entregado
+---------------------------------------------------------------------------
+
+Se entrega una representación *incompleta* del juego 6x6 de othello,
+y un programa principal (main.cc) para evaluar los algoritmos
+implementados. Se entrega un artículo en cuyo apéndice se describe la
+versión reducida de othello y que contiene la variación principal del
+juego.
+
+---------------------------------------------------------------------------
+Actividad 1
+---------------------------------------------------------------------------
+
+Completar y probar la representación del juego.
+
+---------------------------------------------------------------------------
+Actividad 2
+---------------------------------------------------------------------------
+
+Implementar los algoritmos:
+
+- minmax/maxmin doblemente recursivo para calcular el valor del juego
+- versión negamax de minmax/maxmin
+- versión negamax de minmax/maxmin con poda alpha-beta
+- scout
+- negascout = negamax con poda alpha-beta + scout
+
+*No es necesario implementar tablas de transposición.*
+
+---------------------------------------------------------------------------
+Actividad 3
+---------------------------------------------------------------------------
+
+Los algoritmos deben ser evaluados sobre el juego de othello a lo
+largo de la variación principal. El valor del juego es -4 y por lo
+tanto, todo tablero a lo largo de la variación principal debe evaluar
+a dicho valor.
+
+La evaluación se hace empezando sobre el tablero terminal y subiendo
+sucesivamente sobre la variación principal. El *mejor* algoritmo será
+aquel que pueda llegar "más" lejos sobre la variación principal.
+
+---------------------------------------------------------------------------
+Entregables
+---------------------------------------------------------------------------
+
+Los estudiantes deben entregar un archivo comprimido que contenga 
+todo lo que se le entrego además del código implementado, los
+resultados de la evaluación, y las conclusiones alcanzadas después
+de analizar los resultados.
+
