@@ -132,7 +132,7 @@ int main(int argc, const char **argv) {
 // max is 1 , or 
 int minmax(state_t state, int depth, bool use_tt){
     // state.print(cout,depth);
-    if (depth == 33 || state.terminal())
+    if (depth == 128 || state.terminal())
         return state.value();
 
     int score = numeric_limits<int>::max();
@@ -140,8 +140,8 @@ int minmax(state_t state, int depth, bool use_tt){
     for (int pos = 0; pos < DIM; ++pos) {
         if (state.is_black_move(pos)) {
             state_t aux_child;
-            aux_child = state;
-            aux_child.move(1,pos);
+            // aux_child = state;
+            aux_child = state.move(1,pos);
             score     = min(score,maxmin(aux_child,depth+1,use_tt));
             expanded++;
             generated++;
@@ -160,7 +160,7 @@ int minmax(state_t state, int depth, bool use_tt){
 }
 
 int maxmin(state_t state, int depth, bool use_tt){
-    if (depth == 33 || state.terminal())
+    if (depth == 128 || state.terminal())
         return state.value();
 
     int score = -numeric_limits<int>::max();
@@ -168,8 +168,8 @@ int maxmin(state_t state, int depth, bool use_tt){
     for (int pos = 0; pos < DIM; ++pos) {
         if (state.is_white_move(pos)) {
             state_t aux_child;
-            aux_child = state;
-            aux_child.move(0,pos);
+            // aux_child = state;
+            aux_child = state.move(0,pos);
             score     = max(score,minmax(aux_child,depth+1,use_tt));
             expanded++;
             generated++;
