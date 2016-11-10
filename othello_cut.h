@@ -246,11 +246,6 @@ inline state_t state_t::move(bool color, int pos) const {
     state_t s(*this);
     if( pos >= DIM ) return s;
 
-    if (!outflank(color, pos)){
-        std::cout << "no se cumpli'o\n";
-        print(std::cout);
-    }
-
     assert(outflank(color, pos));
     s.set_color(color, pos);
 

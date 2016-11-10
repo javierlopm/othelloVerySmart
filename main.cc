@@ -110,7 +110,7 @@ int main(int argc, const char **argv) {
             } else if( algorithm == 2 ) {
                 value = negamax(pv[i], i+1, -200, 200, color, use_tt);
             } else if( algorithm == 3 ) {
-                //value = scout(pv[i], 0, color, use_tt);
+                value = scout(pv[i], i+1, color, use_tt);
             } else if( algorithm == 4 ) {
                 //value = negascout(pv[i], 0, -200, 200, color, use_tt);
             }
@@ -246,4 +246,64 @@ int negamax(state_t state, int depth, int alpha, int beta, int color, bool use_t
     }
 
     return score;
+}
+
+
+
+
+int test(state_t state, int depth, int color, int score, bool gt){
+    if (depth == 0 || state.terminal()){
+        if (gt) return state.value() > score;
+        else    return state.value() >= score;
+    }
+
+
+    for (int pos = 0; pos < DIM; ++pos) {
+        if ( (color==1 && state.is_black_move(pos))||(color!=1 && state.is_white_move(pos))) {
+            state_t aux_child;
+            aux_child = state.move(color==1,pos);
+
+            if ((color==1)  && test(aux_child,-color,depth-1,score,gt)) 
+                return true;
+            
+            if(!(color==1) && !test(aux_child,-color,depth-1,score,gt)) 
+                return false;
+        }
+        // else generated ++;
+    }
+
+    return (color != 1); 
+}
+
+
+
+int scout(state_t state, int depth, int color, bool use_tt){
+    if (depth == 0 || state.terminal())
+        return state.value();
+
+    int score = 0;
+    bool is_first = true;
+
+    for (int pos = 0; pos < DIM; ++pos) {
+        if ( (color==1 && state.is_black_move(pos))||(color!=1 && state.is_white_move(pos))) {
+            state_t aux_child;
+            aux_child = state.move(color==1,pos);
+
+            if (is_first) {
+                score = scout(aux_child,depth-1,-color,use_tt);
+                is_first = false;
+                continue;
+            }
+
+
+            if ((color==1)  && test(aux_child,-color,depth-1,score,true)) 
+                score = scout(aux_child,depth-1,-color,use_tt);
+
+            if(!(color==1) && !test(aux_child,-color,depth-1,score,false)) 
+                score = scout(aux_child,depth-1,-color,use_tt);
+        }
+        // else generated ++;
+    }
+
+    return score; 
 }
