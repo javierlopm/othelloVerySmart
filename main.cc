@@ -32,6 +32,10 @@ struct hash_function_t {
 };
 
 class hash_table_t : public unordered_map<state_t, stored_info_t, hash_function_t> {
+    // public:
+    //     void insert_state(){
+    //         unordered_map<state_t, stored_info_t, hash_function_t>::const_iterator got = mymap.find (input);
+    //     }
 };
 
 hash_table_t TTable[2];
@@ -102,9 +106,9 @@ int main(int argc, const char **argv) {
             if( algorithm == 0 ) {
                 value = color * (color == 1 ? maxmin(pv[i], i+1 , use_tt) : minmax(pv[i], i+1 , use_tt));
             } else if( algorithm == 1 ) {
-                //value = negamax(pv[i], 0, color, use_tt);
+                value = negamax(pv[i], i+1, color, use_tt);
             } else if( algorithm == 2 ) {
-                //value = negamax(pv[i], 0, -200, 200, color, use_tt);
+                value = negamax(pv[i], i+1, -200, 200, color, use_tt);
             } else if( algorithm == 3 ) {
                 //value = scout(pv[i], 0, color, use_tt);
             } else if( algorithm == 4 ) {
@@ -143,7 +147,7 @@ int minmax(state_t state, int depth, bool use_tt){
             state_t aux_child;
             // aux_child = state;
             aux_child = state.white_move(pos);
-            score     = min(score,maxmin(aux_child,depth-1,true));
+            score     = min(score,maxmin(aux_child,depth-1,use_tt));
             expanded++;
             generated++;
         }
@@ -170,7 +174,7 @@ int maxmin(state_t state, int depth, bool use_tt){
         if (state.is_black_move(pos)) {
             state_t aux_child;
             aux_child = state.black_move(pos);
-            score     = max(score,minmax(aux_child,depth-1,true));
+            score     = max(score,minmax(aux_child,depth-1,use_tt));
             expanded++;
             generated++;
         }
@@ -186,3 +190,60 @@ int maxmin(state_t state, int depth, bool use_tt){
     return score;
 }
 
+int negamax(state_t state, int depth, int color, bool use_tt){
+    if (depth == 0 || state.terminal())
+        return color * state.value();
+
+    int score = -numeric_limits<int>::max();
+
+    for (int pos = 0; pos < DIM; ++pos) {
+        if ( (color==1 && state.is_black_move(pos))||(color!=1 && state.is_white_move(pos))) {
+            state_t aux_child;
+            aux_child = state.move(color==1,pos);
+            score     = max(score,-negamax(aux_child,depth-1,-color,use_tt));
+            expanded++;
+            generated++;
+        }
+        // else generated ++;
+    }
+
+    // No moves found, pass turn
+    if (score == -numeric_limits<int>::max() ) {
+        score = -negamax(state,depth-1,-color,true);
+        expanded++;
+    }
+
+    return score;
+}
+
+int negamax(state_t state, int depth, int alpha, int beta, int color, bool use_tt){
+    if (depth == 0 || state.terminal())
+        return color * state.value();
+
+    int score = -numeric_limits<int>::max();
+
+    for (int pos = 0; pos < DIM; ++pos) {
+        if ( (color==1 && state.is_black_move(pos))||(color!=1 && state.is_white_move(pos))) {
+            state_t aux_child;
+            aux_child = state.move(color==1,pos);
+
+            int val = -negamax(aux_child,depth-1,-beta,-alpha,-color,use_tt);
+
+            score  = max(score,val);
+            alpha  = max(alpha,val);
+            expanded++;
+            generated++;
+
+            if (alpha >= beta) break;
+        }
+        // else generated ++;
+    }
+
+    // No moves found, pass turn
+    if (score == -numeric_limits<int>::max() ) {
+        score = -negamax(state,depth-1,-beta,-alpha,-color,use_tt);
+        expanded++;
+    }
+
+    return score;
+}
