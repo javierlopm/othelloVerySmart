@@ -13,7 +13,7 @@
 
 using namespace std;
 
-unsigned expanded = 0;
+unsigned expanded  = 0;
 unsigned generated = 0;
 int tt_threshold = 32; // threshold to save entries in TT
 
@@ -94,13 +94,13 @@ int main(int argc, const char **argv) {
         TTable[0].clear();
         TTable[1].clear();
         float start_time = Utils::read_time_in_seconds();
-        expanded = 0;
+        expanded  = 0;
         generated = 0;
         int color = i % 2 == 1 ? 1 : -1;
 
         try {
             if( algorithm == 0 ) {
-                //value = color * (color == 1 ? maxmin(pv[i], 0, use_tt) : minmax(pv[i], 0, use_tt));
+                value = color * (color == 1 ? maxmin(pv[i], 0, use_tt) : minmax(pv[i], 0, use_tt));
             } else if( algorithm == 1 ) {
                 //value = negamax(pv[i], 0, color, use_tt);
             } else if( algorithm == 2 ) {
@@ -129,4 +129,59 @@ int main(int argc, const char **argv) {
 
     return 0;
 }
+// max is 1 , or 
+int minmax(state_t state, int depth, bool use_tt){
+    // state.print(cout,depth);
+    if (depth == 33 || state.terminal())
+        return state.value();
 
+    int score = numeric_limits<int>::max();
+
+    for (int pos = 0; pos < DIM; ++pos) {
+        if (state.is_black_move(pos)) {
+            state_t aux_child;
+            aux_child = state;
+            aux_child.move(1,pos);
+            score     = min(score,maxmin(aux_child,depth+1,use_tt));
+            expanded++;
+            generated++;
+        }
+        else generated ++;
+        
+    }
+
+    // No moves found, pass turn
+    if (score == numeric_limits<int>::max() ) {
+        score = maxmin(state,depth+1,use_tt);
+        expanded++;
+    }
+
+    return score;
+}
+
+int maxmin(state_t state, int depth, bool use_tt){
+    if (depth == 33 || state.terminal())
+        return state.value();
+
+    int score = -numeric_limits<int>::max();
+
+    for (int pos = 0; pos < DIM; ++pos) {
+        if (state.is_white_move(pos)) {
+            state_t aux_child;
+            aux_child = state;
+            aux_child.move(0,pos);
+            score     = max(score,minmax(aux_child,depth+1,use_tt));
+            expanded++;
+            generated++;
+        }
+        else generated ++;
+    }
+
+    // No moves found, pass turn
+    if (score == -numeric_limits<int>::max() ) {
+        score = minmax(state,depth+1,use_tt);
+        expanded++;
+    }
+
+    return score;
+}
