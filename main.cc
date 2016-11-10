@@ -100,7 +100,7 @@ int main(int argc, const char **argv) {
 
         try {
             if( algorithm == 0 ) {
-                value = color * (color == 1 ? maxmin(pv[i], 0, use_tt) : minmax(pv[i], 0, use_tt));
+                value = color * (color == 1 ? maxmin(pv[i], i+1 , use_tt) : minmax(pv[i], i+1 , use_tt));
             } else if( algorithm == 1 ) {
                 //value = negamax(pv[i], 0, color, use_tt);
             } else if( algorithm == 2 ) {
@@ -132,17 +132,18 @@ int main(int argc, const char **argv) {
 // max is 1 , or 
 int minmax(state_t state, int depth, bool use_tt){
     // state.print(cout,depth);
-    if (depth == 128 || state.terminal())
+
+    if (depth == 0 || state.terminal())
         return state.value();
 
     int score = numeric_limits<int>::max();
 
     for (int pos = 0; pos < DIM; ++pos) {
-        if (state.is_black_move(pos)) {
+        if (state.is_white_move(pos)) {
             state_t aux_child;
             // aux_child = state;
-            aux_child = state.move(true,pos);
-            score     = min(score,maxmin(aux_child,depth+1,use_tt));
+            aux_child = state.white_move(pos);
+            score     = min(score,maxmin(aux_child,depth-1,true));
             expanded++;
             generated++;
         }
@@ -152,7 +153,7 @@ int minmax(state_t state, int depth, bool use_tt){
 
     // No moves found, pass turn
     if (score == numeric_limits<int>::max() ) {
-        score = maxmin(state,depth+1,use_tt);
+        score = maxmin(state,depth-1,use_tt);
         expanded++;
     }
 
@@ -160,17 +161,16 @@ int minmax(state_t state, int depth, bool use_tt){
 }
 
 int maxmin(state_t state, int depth, bool use_tt){
-    if (depth == 128 || state.terminal())
+    if (depth == 0 || state.terminal())
         return state.value();
 
     int score = -numeric_limits<int>::max();
 
     for (int pos = 0; pos < DIM; ++pos) {
-        if (state.is_white_move(pos)) {
+        if (state.is_black_move(pos)) {
             state_t aux_child;
-            // aux_child = state;
-            aux_child = state.move(false,pos);
-            score     = max(score,minmax(aux_child,depth+1,use_tt));
+            aux_child = state.black_move(pos);
+            score     = max(score,minmax(aux_child,depth-1,true));
             expanded++;
             generated++;
         }
@@ -179,7 +179,7 @@ int maxmin(state_t state, int depth, bool use_tt){
 
     // No moves found, pass turn
     if (score == -numeric_limits<int>::max() ) {
-        score = minmax(state,depth+1,use_tt);
+        score = minmax(state,depth-1,use_tt);
         expanded++;
     }
 
