@@ -36,7 +36,7 @@ class hash_table_t : public unordered_map<state_t, stored_info_t, hash_function_
 
 hash_table_t TTable[2];
 
-int maxmin(state_t state, int depth, bool use_tt);
+// int maxmin(state_t state, int depth, bool use_tt);
 int minmax(state_t state, int depth, bool use_tt = false);
 int maxmin(state_t state, int depth, bool use_tt = false);
 int negamax(state_t state, int depth, int color, bool use_tt = false);
@@ -141,12 +141,12 @@ int minmax(state_t state, int depth, bool use_tt){
         if (state.is_black_move(pos)) {
             state_t aux_child;
             // aux_child = state;
-            aux_child = state.move(1,pos);
+            aux_child = state.move(true,pos);
             score     = min(score,maxmin(aux_child,depth+1,use_tt));
             expanded++;
             generated++;
         }
-        else generated ++;
+        // else generated ++;
         
     }
 
@@ -169,12 +169,12 @@ int maxmin(state_t state, int depth, bool use_tt){
         if (state.is_white_move(pos)) {
             state_t aux_child;
             // aux_child = state;
-            aux_child = state.move(0,pos);
+            aux_child = state.move(false,pos);
             score     = max(score,minmax(aux_child,depth+1,use_tt));
             expanded++;
             generated++;
         }
-        else generated ++;
+        // else generated ++;
     }
 
     // No moves found, pass turn
@@ -185,3 +185,4 @@ int maxmin(state_t state, int depth, bool use_tt){
 
     return score;
 }
+
