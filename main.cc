@@ -263,10 +263,10 @@ int test(state_t state, int depth, int color, int score, bool gt){
             state_t aux_child;
             aux_child = state.move(color==1,pos);
 
-            if ((color==1)  && test(aux_child,-color,depth-1,score,gt)) 
+            if ((color==1)  && test(aux_child,depth-1,-color,score,gt)) 
                 return true;
             
-            if(!(color==1) && !test(aux_child,-color,depth-1,score,gt)) 
+            if(!(color==1) && !test(aux_child,depth-1,-color,score,gt)) 
                 return false;
         }
         // else generated ++;
@@ -283,9 +283,11 @@ int scout(state_t state, int depth, int color, bool use_tt){
 
     int score = 0;
     bool is_first = true;
+    bool visited  = false;
 
     for (int pos = 0; pos < DIM; ++pos) {
         if ( (color==1 && state.is_black_move(pos))||(color!=1 && state.is_white_move(pos))) {
+            visited = true;
             state_t aux_child;
             aux_child = state.move(color==1,pos);
 
@@ -296,14 +298,18 @@ int scout(state_t state, int depth, int color, bool use_tt){
             }
 
 
-            if ((color==1)  && test(aux_child,-color,depth-1,score,true)) 
+            if ((color==1)  && test(aux_child,depth-1,-color,score,true)) 
                 score = scout(aux_child,depth-1,-color,use_tt);
 
-            if(!(color==1) && !test(aux_child,-color,depth-1,score,false)) 
+            if(!(color==1) && !test(aux_child,depth-1,-color,score,false)) 
                 score = scout(aux_child,depth-1,-color,use_tt);
         }
         // else generated ++;
     }
+
+    if (!visited ) 
+        score = scout(state,depth-1,-color,use_tt);
+    
 
     return score; 
 }
