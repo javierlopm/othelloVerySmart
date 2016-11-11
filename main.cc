@@ -110,7 +110,7 @@ int main(int argc, const char **argv) {
             } else if( algorithm == 2 ) {
                 value = negamax(pv[i], i+1, -200, 200, color, use_tt);
             } else if( algorithm == 3 ) {
-                value = color* scout(pv[i], i+1, color, use_tt);
+                value = color * scout(pv[i], i+1, color, use_tt);
             } else if( algorithm == 4 ) {
                 //value = negascout(pv[i], 0, -200, 200, color, use_tt);
             }
