@@ -112,7 +112,7 @@ int main(int argc, const char **argv) {
             } else if( algorithm == 3 ) {
                 value = color * scout(pv[i], i+1, color, use_tt);
             } else if( algorithm == 4 ) {
-                //value = negascout(pv[i], 0, -200, 200, color, use_tt);
+                value = negascout(pv[i],i+1, -200, 200, color, use_tt);
             }
         } catch( const bad_alloc &e ) {
             cout << "size TT[0]: size=" << TTable[0].size() << ", #buckets=" << TTable[0].bucket_count() << endl;
@@ -315,4 +315,46 @@ int scout(state_t state, int depth, int color, bool use_tt){
     
 
     return score; 
+}
+
+int negascout(state_t state, int depth, int alpha, int beta, int color, bool use_tt){
+    if (state.terminal())
+        return color * state.value();
+
+    bool is_first = true;
+    bool visited  = false;
+    int  score    = 0;
+
+    for (int pos = 0; pos < DIM; ++pos) {
+        if ( (color==1 && state.is_black_move(pos))||(color!=1 && state.is_white_move(pos))) {
+            visited = true;
+            state_t aux_child;
+            aux_child = state.move(color==1,pos);
+
+            if (is_first) {
+                score = -negascout(aux_child,depth-1,-beta,-alpha,-color,use_tt);
+                is_first = false;
+                continue;
+            }
+
+            score = -negascout(aux_child,depth-1,-alpha-1,-alpha,-color,use_tt);
+
+            if (alpha < score && score < beta) {
+                score = -negascout(aux_child,depth-1,-beta,-score,-color,use_tt);
+                alpha = max(alpha,score);
+            }
+
+            if (alpha >= beta)
+                break;
+        }
+        // else generated ++;
+    }
+
+    if (!visited) {
+        score = -negascout(state,depth-1,beta,alpha,-color,use_tt);
+        return score;
+    }
+    else return alpha;
+
+
 }
