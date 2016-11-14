@@ -261,11 +261,11 @@ int negamax(state_t state, int depth, int alpha, int beta, int color, bool use_t
 
 int test(state_t state, int depth, int color, int score, bool gt){
     state_t aux_child;
-    bool isBlack = color==1;
     if (state.terminal() || depth == 0){
         if (gt) return state.value() > score;
         else    return state.value() >= score;
     }
+    bool isBlack  = color==1;
     bool visited  = false;
 
     for (int pos = 0; pos < DIM; ++pos) {
@@ -274,9 +274,9 @@ int test(state_t state, int depth, int color, int score, bool gt){
 
             visited = true;
 
-            if ((isBlack)  && test(aux_child,depth-1,-color,score,gt)) 
+            if (isBlack  && test(aux_child,depth-1,-color,score,gt)) 
                 return true;
-            if((isBlack) && !test(aux_child,depth-1,-color,score,gt)) 
+            if(!isBlack && !test(aux_child,depth-1,-color,score,gt)) 
                 return false;
         }
         // else generated ++;
@@ -325,6 +325,7 @@ int scout(state_t state, int depth, int color, bool use_tt){
     expanded++;
     return score; 
 }
+
 
 int negascout(state_t state, int depth, int alpha, int beta, int color, bool use_tt){
     if (state.terminal())
