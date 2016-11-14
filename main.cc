@@ -5,7 +5,7 @@
 // Modified by: 
 
 #include <iostream>
-#include <limits>
+#include <climits>
 #include "othello_cut.h" // won't work correctly until .h is fixed!
 #include "utils.h"
 
@@ -38,7 +38,7 @@ class hash_table_t : public unordered_map<state_t, stored_info_t, hash_function_
     //     }
 };
 
-hash_table_t TTable[2];
+hash_table_t TTable[2];  //INTENTARE ESTO MANANA OTRA VEZ DESDE 0. FALLÉ HORRIBLEMENTE HOY.
 
 // int maxmin(state_t state, int depth, bool use_tt);
 int minmax(state_t state, int depth, bool use_tt = false);
@@ -87,7 +87,8 @@ int main(int argc, const char **argv) {
         cout << "Scout";
     } else if( algorithm == 4 ) {
         cout << "Negascout";
-    }
+    } else
+        cout << "No-Algorithm";
     cout << (use_tt ? " w/ transposition table" : "") << endl;
 
     // Run algorithm along PV (bacwards)
@@ -136,19 +137,19 @@ int main(int argc, const char **argv) {
 // max is 1 , or 
 int minmax(state_t state, int depth, bool use_tt){
     // state.print(cout,depth);
-
+    state_t aux_child;
     if (depth == 0 || state.terminal())
         return state.value();
 
-    int score = numeric_limits<int>::max();
-
+    int score = INT_MAX;
+    bool skip = true;
     for (int pos = 0; pos < DIM; ++pos) {
         if (state.is_white_move(pos)) {
-            state_t aux_child;
             // aux_child = state;
             aux_child = state.white_move(pos);
             score     = min(score,maxmin(aux_child,depth-1,use_tt));
-            expanded++;
+            //expanded++;
+            skip = false;
             generated++;
         }
         // else generated ++;
@@ -156,82 +157,89 @@ int minmax(state_t state, int depth, bool use_tt){
     }
 
     // No moves found, pass turn
-    if (score == numeric_limits<int>::max() ) {
-        score = maxmin(state,depth-1,use_tt);
-        expanded++;
+    if (skip || score == INT_MAX ) {
+        score = min(score,maxmin(state,depth-1,use_tt));
     }
 
+    expanded++;
     return score;
 }
 
 int maxmin(state_t state, int depth, bool use_tt){
+    state_t aux_child;
     if (depth == 0 || state.terminal())
         return state.value();
 
-    int score = -numeric_limits<int>::max();
-
+    int score = INT_MIN;
+    bool skip = true;
     for (int pos = 0; pos < DIM; ++pos) {
         if (state.is_black_move(pos)) {
-            state_t aux_child;
             aux_child = state.black_move(pos);
             score     = max(score,minmax(aux_child,depth-1,use_tt));
-            expanded++;
+            //expanded++;
+            skip = false;
             generated++;
         }
         // else generated ++;
     }
 
     // No moves found, pass turn
-    if (score == -numeric_limits<int>::max() ) {
-        score = minmax(state,depth-1,use_tt);
-        expanded++;
+    if (skip || score == INT_MIN ) {
+        score = max(score,minmax(state,depth-1,use_tt));
     }
+    expanded++;
 
     return score;
 }
 
 int negamax(state_t state, int depth, int color, bool use_tt){
+    bool skip = true;
+    state_t aux_child;
     if (depth == 0 || state.terminal())
         return color * state.value();
 
-    int score = -numeric_limits<int>::max();
-
+    int score = INT_MIN;
+    bool isBlack = color==1;
     for (int pos = 0; pos < DIM; ++pos) {
-        if ( (color==1 && state.is_black_move(pos))||(color!=1 && state.is_white_move(pos))) {
-            state_t aux_child;
-            aux_child = state.move(color==1,pos);
+        if ( (isBlack && state.is_black_move(pos))||(!isBlack && state.is_white_move(pos))) {
+            aux_child = state.move(isBlack,pos);
             score     = max(score,-negamax(aux_child,depth-1,-color,use_tt));
-            expanded++;
+            //expanded++;
+            skip = false;
             generated++;
         }
         // else generated ++;
     }
 
     // No moves found, pass turn
-    if (score == -numeric_limits<int>::max() ) {
-        score = -negamax(state,depth-1,-color,true);
-        expanded++;
+    if (skip || score == INT_MIN ) {
+        score = max(score,-negamax(state,depth-1,-color,use_tt));
     }
 
+    expanded++;
     return score;
 }
 
 int negamax(state_t state, int depth, int alpha, int beta, int color, bool use_tt){
+    bool skip = true;
+    state_t aux_child;
+    bool isBlack = color==1;
+
     if (depth == 0 || state.terminal())
         return color * state.value();
 
-    int score = -numeric_limits<int>::max();
+    int score = INT_MIN;
 
     for (int pos = 0; pos < DIM; ++pos) {
-        if ( (color==1 && state.is_black_move(pos))||(color!=1 && state.is_white_move(pos))) {
-            state_t aux_child;
-            aux_child = state.move(color==1,pos);
+        if ( (isBlack && state.is_black_move(pos))||(!isBlack && state.is_white_move(pos))) {
+            aux_child = state.move(isBlack,pos);
 
             int val = -negamax(aux_child,depth-1,-beta,-alpha,-color,use_tt);
 
             score  = max(score,val);
             alpha  = max(alpha,val);
-            expanded++;
+            //expanded++;
+            skip = false;
             generated++;
 
             if (alpha >= beta) break;
@@ -240,11 +248,11 @@ int negamax(state_t state, int depth, int alpha, int beta, int color, bool use_t
     }
 
     // No moves found, pass turn
-    if (score == -numeric_limits<int>::max() ) {
-        score = -negamax(state,depth-1,-beta,-alpha,-color,use_tt);
-        expanded++;
+    if (skip || score == INT_MIN ) {
+        score = max(score,-negamax(state,depth-1,-beta,-alpha,-color,use_tt));
     }
 
+    expanded++;
     return score;
 }
 
@@ -252,22 +260,23 @@ int negamax(state_t state, int depth, int alpha, int beta, int color, bool use_t
 
 
 int test(state_t state, int depth, int color, int score, bool gt){
-    if ( state.terminal()){
+    state_t aux_child;
+    bool isBlack = color==1;
+    if (state.terminal() || depth == 0){
         if (gt) return state.value() > score;
         else    return state.value() >= score;
     }
     bool visited  = false;
 
     for (int pos = 0; pos < DIM; ++pos) {
-        if ( (color==1 && state.is_black_move(pos))||(color!=1 && state.is_white_move(pos))) {
-            state_t aux_child;
+        if ( (isBlack && state.is_black_move(pos))||(!isBlack && state.is_white_move(pos))) {
             aux_child = state.move(color==1,pos);
 
             visited = true;
 
-            if ((color==1)  && test(aux_child,depth-1,-color,score,gt)) 
+            if ((isBlack)  && test(aux_child,depth-1,-color,score,gt)) 
                 return true;
-            if((color!=1) && !test(aux_child,depth-1,-color,score,gt)) 
+            if((isBlack) && !test(aux_child,depth-1,-color,score,gt)) 
                 return false;
         }
         // else generated ++;
@@ -276,25 +285,25 @@ int test(state_t state, int depth, int color, int score, bool gt){
     if (!visited)
         return test(state,depth-1,-color,score,gt);
 
-    return (color != 1); 
+    return (!isBlack); 
 }
 
 
 
 int scout(state_t state, int depth, int color, bool use_tt){
-    if (state.terminal())
+    if (depth == 0 || state.terminal())
         return state.value();
-
+    state_t aux_child;
+    bool isBlack = color==1;
     int score = 0;
     bool is_first = true;
     bool visited  = false;
 
     for (int pos = 0; pos < DIM; ++pos) {
-        if ( (color==1 && state.is_black_move(pos))||(color!=1 && state.is_white_move(pos))) {
+        if ( (isBlack && state.is_black_move(pos))||(!isBlack && state.is_white_move(pos))) {
             visited = true;
-            state_t aux_child;
-            aux_child = state.move(color==1,pos);
-
+            generated++;
+            aux_child = state.move(isBlack,pos);
             if (is_first) {
                 score = scout(aux_child,depth-1,-color,use_tt);
                 is_first = false;
@@ -302,9 +311,9 @@ int scout(state_t state, int depth, int color, bool use_tt){
             }
 
 
-            if ((color==1) && test(aux_child,depth-1,-color,score,true)) 
+            if (isBlack && test(aux_child,depth-1,-color,score,true)) 
                 score = scout(aux_child,depth-1,-color,use_tt);
-            if((color!=1)  && !test(aux_child,depth-1,-color,score,false)) 
+            if(!isBlack && !test(aux_child,depth-1,-color,score,false)) 
                 score = scout(aux_child,depth-1,-color,use_tt);
         }
         // else generated ++;
@@ -313,23 +322,24 @@ int scout(state_t state, int depth, int color, bool use_tt){
     if (!visited ) 
         score = scout(state,depth-1,-color,use_tt);
     
-
+    expanded++;
     return score; 
 }
 
 int negascout(state_t state, int depth, int alpha, int beta, int color, bool use_tt){
     if (state.terminal())
         return color * state.value();
-
+    state_t aux_child;
+    bool isBlack = color==1;
     bool is_first = true;
     bool visited  = false;
     int  score    = 0;
 
     for (int pos = 0; pos < DIM; ++pos) {
-        if ( (color==1 && state.is_black_move(pos))||(color!=1 && state.is_white_move(pos))) {
+        if ( (isBlack && state.is_black_move(pos))||(!isBlack && state.is_white_move(pos))) {
             visited = true;
-            state_t aux_child;
-            aux_child = state.move(color==1,pos);
+            generated++;
+            aux_child = state.move(isBlack,pos);
 
             if (is_first) {
                 score = -negascout(aux_child,depth-1,-beta,-alpha,-color,use_tt);
@@ -350,8 +360,9 @@ int negascout(state_t state, int depth, int alpha, int beta, int color, bool use
     }
 
     if (!visited )
-        return -negascout(state,depth-1,-beta,-alpha,-color,use_tt);
+        alpha = -negascout(state,depth-1,-beta,-alpha,-color,use_tt);
 
+    expanded++;
     return alpha;
 
 }
