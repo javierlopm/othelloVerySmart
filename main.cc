@@ -270,6 +270,7 @@ int test(state_t state, int depth, int color, int score, bool gt){
 
     for (int pos = 0; pos < DIM; ++pos) {
         if ( (isBlack && state.is_black_move(pos))||(!isBlack && state.is_white_move(pos))) {
+        	generated++;
             aux_child = state.move(color==1,pos);
 
             visited = true;
@@ -278,13 +279,16 @@ int test(state_t state, int depth, int color, int score, bool gt){
                 return true;
             if(!isBlack && !test(aux_child,depth-1,-color,score,gt)) 
                 return false;
+			//generated++;
         }
         // else generated ++;
     }
 
-    if (!visited)
+    if (!visited){
+        expanded++;
         return test(state,depth-1,-color,score,gt);
-
+    }
+    expanded++;
     return (!isBlack); 
 }
 
