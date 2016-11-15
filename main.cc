@@ -1,20 +1,3 @@
-Skip to content
-This repository
-Search
-Pull requests
-Issues
-Gist
- @nabiljesus
- Unwatch 3
-  Star 0
- Fork 0 javierlopm/othelloVerySmart
- Code  Issues 0  Pull requests 0  Projects 0  Wiki  Pulse  Graphs
-Tree: 66bece40f3 Find file Copy pathothelloVerySmart/main.cc
-66bece4  an hour ago
-@Satdes Satdes conteo nodos
-3 contributors @javierlopm @nabiljesus @Satdes
-RawBlameHistory     
-374 lines (309 sloc)  10.8 KB
 // Game of Othello -- Example of main
 // Universidad Simon Bolivar, 2012.
 // Author: Blai Bonet
@@ -49,10 +32,15 @@ struct hash_function_t {
 };
 
 class hash_table_t : public unordered_map<state_t, stored_info_t, hash_function_t> {
+    // public:
+    //     void insert_state(){
+    //         unordered_map<state_t, stored_info_t, hash_function_t>::const_iterator got = mymap.find (input);
+    //     }
 };
 
-hash_table_t TTable[2]; 
+hash_table_t TTable[2];  //INTENTARE ESTO MANANA OTRA VEZ DESDE 0. FALLÉ HORRIBLEMENTE HOY.
 
+// int maxmin(state_t state, int depth, bool use_tt);
 int minmax(state_t state, int depth, bool use_tt = false);
 int maxmin(state_t state, int depth, bool use_tt = false);
 int negamax(state_t state, int depth, int color, bool use_tt = false);
@@ -148,6 +136,7 @@ int main(int argc, const char **argv) {
 }
 // max is 1 , or 
 int minmax(state_t state, int depth, bool use_tt){
+    // state.print(cout,depth);
     state_t aux_child;
     if (depth == 0 || state.terminal())
         return state.value();
@@ -156,17 +145,22 @@ int minmax(state_t state, int depth, bool use_tt){
     bool skip = true;
     for (int pos = 0; pos < DIM; ++pos) {
         if (state.is_white_move(pos)) {
+            // aux_child = state;
             aux_child = state.white_move(pos);
             score     = min(score,maxmin(aux_child,depth-1,use_tt));
+            //expanded++;
             skip = false;
             generated++;
-        }     
+        }
+        // else generated ++;
+        
     }
 
     // No moves found, pass turn
     if (skip || score == INT_MAX ) {
         score = min(score,maxmin(state,depth-1,use_tt));
     }
+
     expanded++;
     return score;
 }
@@ -182,9 +176,11 @@ int maxmin(state_t state, int depth, bool use_tt){
         if (state.is_black_move(pos)) {
             aux_child = state.black_move(pos);
             score     = max(score,minmax(aux_child,depth-1,use_tt));
+            //expanded++;
             skip = false;
             generated++;
         }
+        // else generated ++;
     }
 
     // No moves found, pass turn
@@ -208,9 +204,11 @@ int negamax(state_t state, int depth, int color, bool use_tt){
         if ( (isBlack && state.is_black_move(pos))||(!isBlack && state.is_white_move(pos))) {
             aux_child = state.move(isBlack,pos);
             score     = max(score,-negamax(aux_child,depth-1,-color,use_tt));
+            //expanded++;
             skip = false;
             generated++;
         }
+        // else generated ++;
     }
 
     // No moves found, pass turn
@@ -240,11 +238,13 @@ int negamax(state_t state, int depth, int alpha, int beta, int color, bool use_t
 
             score  = max(score,val);
             alpha  = max(alpha,val);
+            //expanded++;
             skip = false;
             generated++;
 
             if (alpha >= beta) break;
         }
+        // else generated ++;
     }
 
     // No moves found, pass turn
@@ -279,7 +279,9 @@ int test(state_t state, int depth, int color, int score, bool gt){
                 return true;
             if(!isBlack && !test(aux_child,depth-1,-color,score,gt)) 
                 return false;
+			//generated++;
         }
+        // else generated ++;
     }
 
     if (!visited){
@@ -318,6 +320,7 @@ int scout(state_t state, int depth, int color, bool use_tt){
             if(!isBlack && !test(aux_child,depth-1,-color,score,false)) 
                 score = scout(aux_child,depth-1,-color,use_tt);
         }
+        // else generated ++;
     }
 
     if (!visited ) 
@@ -358,6 +361,7 @@ int negascout(state_t state, int depth, int alpha, int beta, int color, bool use
             if (alpha >= beta)
                 break;
         }
+        // else generated ++;
     }
 
     if (!visited )
@@ -367,5 +371,3 @@ int negascout(state_t state, int depth, int alpha, int beta, int color, bool use
     return alpha;
 
 }
-Contact GitHub API Training Shop Blog About
-© 2016 GitHub, Inc. Terms Privacy Security Status Help
