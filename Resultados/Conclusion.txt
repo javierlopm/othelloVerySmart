@@ -5,18 +5,29 @@ Nabil Marquez - 11-10683
 Javier Lopez - 11-10552
 ---------------------------------------------------------------------------------------------------------------------------------
 
-Implementamos y evaluamos a los algoritmos Minmax, Negamax, Negamax con alpha-beta pruning, Scout y Negascout para la versión reducida de Othelo.
+Implementamos y evaluamos a los algoritmos Minmax, Negamax, Negamax con alpha-beta pruning, Scout y Negascout para la versión reducida 
+de Othelo.
 
 Observamos la cantidad de nodos generados, expandidos, el tiempo de cada iteración y calculamos la cantidad de nodos generados por segundo.
 
 Todos los algoritmos corrieron por 20 minutos y los resultados se encuentran en el directorio Resultados.
 
-Los algoritmos Minmax y Negamax lograron llegar al nivel 18. Como esperábamos generaron y expandieron al misma cantidad de nodos, y no hubo una diferencia significativa en el tiempo esto se debe a que negamax no representa ninguna mejora respecto a Minmax ya que son esencialmente el mismo algoritmo.
+Los algoritmos Minmax y Negamax lograron llegar al nivel 18. Como esperábamos generaron y expandieron al misma cantidad de nodos, y no 
+hubo una diferencia significativa en el tiempo esto se debe a que negamax no representa ninguna mejora respecto a Minmax ya que son 
+esencialmente el mismo algoritmo.
 
-En Negamax con alpha-beta pruning observamos una considerable reducción en el numero de nodos evaluados gracias alpha-beta pruning, debido a la poda de hijos revisamos menos ramas y por lo tanto generamos menos nodos, acelerando el algoritmo y permitiéndole alcanzar niveles mas profundos. Gracias a esto Negamax con alpha-beta pruning logró alcanzar el nivel 13 en la misma cantidad de tiempo que Negamax simple alcanzó el nivel 18.
+En Negamax con alpha-beta pruning observamos una considerable reducción en el numero de nodos evaluados gracias alpha-beta pruning, 
+debido a la poda de hijos revisamos menos ramas y por lo tanto generamos menos nodos, acelerando el algoritmo y permitiéndole alcanzar
+niveles mas profundos. Gracias a esto Negamax con alpha-beta pruning logró alcanzar el nivel 13 en la misma cantidad de tiempo que 
+Negamax simple alcanzó el nivel 18.
 
-El algoritmo Scout logró alcanzar el nivel 12, un nivel más que Negamax con alpha-beta pruning, al evaluar la cantidad de nodos generados por ambos algoritmos en el nivel 12 observamos que Scout generó 129798899 nodos menos que Negamax con alpha-beta pruning además la cantidad de nodos expandidos y sus tiempos también fueron menores. 
+El algoritmo Scout logró alcanzar el nivel 12, un nivel más que Negamax con alpha-beta pruning, al evaluar la cantidad de nodos 
+generados por ambos algoritmos en el nivel 12 observamos que Scout generó 129798899 nodos menos que Negamax con alpha-beta pruning
+además la cantidad de nodos expandidos y sus tiempos también fueron menores. 
 
-El ultimo algoritmo Negascout no logró alcanzar un nuevo nivel en el tiempo establecido con respecto a Scout, sin embargo Negascout generó una menor cantidad de nodos y fue más rápido en cada iteración, debido a esto concluimos que Negascout presentará una ventaja a mayores profundidades de búsqueda.
+El ultimo algoritmo Negascout no logró alcanzar un nuevo nivel en el tiempo establecido con respecto a Scout, sin embargo Negascout 
+generó una menor cantidad de nodos y fue más rápido en cada iteración, debido a esto concluimos que Negascout presentará una ventaja 
+a mayores profundidades de búsqueda.
 
-A partir de los resultados obtenidos concluimos que el algoritmo más rápido de los implementados es Negascout, seguido por Scout, Negamax Alpha-Beta Pruning y por ultimo tenemos empatados a los algoritmos Minimax y Negamax simple.
+A partir de los resultados obtenidos concluimos que el algoritmo más rápido de los implementados es Negascout, seguido por Scout, 
+Negamax Alpha-Beta Pruning y por ultimo tenemos empatados a los algoritmos Minimax y Negamax simple.
