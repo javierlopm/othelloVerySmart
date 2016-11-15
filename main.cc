@@ -6,7 +6,7 @@
 
 #include <iostream>
 #include <climits>
-#include "othello_cut.h" // won't work correctly until .h is fixed!
+#include "othello_cut.h"
 #include "utils.h"
 
 #include <unordered_map>
@@ -32,13 +32,10 @@ struct hash_function_t {
 };
 
 class hash_table_t : public unordered_map<state_t, stored_info_t, hash_function_t> {
-    // public:
-    //     void insert_state(){
-    //         unordered_map<state_t, stored_info_t, hash_function_t>::const_iterator got = mymap.find (input);
-    //     }
+
 };
 
-hash_table_t TTable[2];  //INTENTARE ESTO MANANA OTRA VEZ DESDE 0. FALLÉ HORRIBLEMENTE HOY.
+hash_table_t TTable[2];
 
 // int maxmin(state_t state, int depth, bool use_tt);
 int minmax(state_t state, int depth, bool use_tt = false);
@@ -94,7 +91,6 @@ int main(int argc, const char **argv) {
     // Run algorithm along PV (bacwards)
     cout << "Moving along PV:" << endl;
     for( int i = 0; i <= npv; ++i ) {
-        //cout << pv[i];
         int value = 0;
         TTable[0].clear();
         TTable[1].clear();
@@ -134,9 +130,8 @@ int main(int argc, const char **argv) {
 
     return 0;
 }
-// max is 1 , or 
+
 int minmax(state_t state, int depth, bool use_tt){
-    // state.print(cout,depth);
     state_t aux_child;
     if (depth == 0 || state.terminal())
         return state.value();
@@ -145,14 +140,11 @@ int minmax(state_t state, int depth, bool use_tt){
     bool skip = true;
     for (int pos = 0; pos < DIM; ++pos) {
         if (state.is_white_move(pos)) {
-            // aux_child = state;
             aux_child = state.white_move(pos);
             score     = min(score,maxmin(aux_child,depth-1,use_tt));
-            //expanded++;
             skip = false;
             generated++;
         }
-        // else generated ++;
         
     }
 
@@ -176,11 +168,9 @@ int maxmin(state_t state, int depth, bool use_tt){
         if (state.is_black_move(pos)) {
             aux_child = state.black_move(pos);
             score     = max(score,minmax(aux_child,depth-1,use_tt));
-            //expanded++;
             skip = false;
             generated++;
         }
-        // else generated ++;
     }
 
     // No moves found, pass turn
@@ -204,11 +194,9 @@ int negamax(state_t state, int depth, int color, bool use_tt){
         if ( (isBlack && state.is_black_move(pos))||(!isBlack && state.is_white_move(pos))) {
             aux_child = state.move(isBlack,pos);
             score     = max(score,-negamax(aux_child,depth-1,-color,use_tt));
-            //expanded++;
             skip = false;
             generated++;
         }
-        // else generated ++;
     }
 
     // No moves found, pass turn
@@ -238,13 +226,11 @@ int negamax(state_t state, int depth, int alpha, int beta, int color, bool use_t
 
             score  = max(score,val);
             alpha  = max(alpha,val);
-            //expanded++;
             skip = false;
             generated++;
 
             if (alpha >= beta) break;
         }
-        // else generated ++;
     }
 
     // No moves found, pass turn
@@ -279,9 +265,7 @@ int test(state_t state, int depth, int color, int score, bool gt){
                 return true;
             if(!isBlack && !test(aux_child,depth-1,-color,score,gt)) 
                 return false;
-			//generated++;
         }
-        // else generated ++;
     }
 
     if (!visited){
@@ -320,7 +304,6 @@ int scout(state_t state, int depth, int color, bool use_tt){
             if(!isBlack && !test(aux_child,depth-1,-color,score,false)) 
                 score = scout(aux_child,depth-1,-color,use_tt);
         }
-        // else generated ++;
     }
 
     if (!visited ) 
@@ -361,7 +344,6 @@ int negascout(state_t state, int depth, int alpha, int beta, int color, bool use
             if (alpha >= beta)
                 break;
         }
-        // else generated ++;
     }
 
     if (!visited )
